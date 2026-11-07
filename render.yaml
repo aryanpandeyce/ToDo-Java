@@ -1,9 +1,3 @@
-databases:
-  - name: lattech-postgres
-    databaseName: tododb
-    user: todouser
-    plan: free
-
 services:
   - type: web
     name: lattech-todo-backend
@@ -17,30 +11,18 @@ services:
         value: prod
       - key: PORT
         value: 8080
-      - key: DB_HOST
-        fromDatabase:
-          name: lattech-postgres
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: lattech-postgres
-          property: port
-      - key: POSTGRES_DB
-        fromDatabase:
-          name: lattech-postgres
-          property: database
+      # Uses embedded PostgreSQL-mode H2 by default so Render deploys cleanly even when your
+      # Render account already has an active free-tier Postgres DB.
+      # To connect your existing Postgres DB instead, replace these 3 values in the Render dashboard:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${POSTGRES_DB}
+        value: jdbc:h2:mem:tododb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      - key: SPRING_DATASOURCE_DRIVER
+        value: org.h2.Driver
       - key: SPRING_DATASOURCE_USERNAME
-        fromDatabase:
-          name: lattech-postgres
-          property: user
+        value: sa
       - key: SPRING_DATASOURCE_PASSWORD
-        fromDatabase:
-          name: lattech-postgres
-          property: password
+        value: ""
       - key: CORS_ALLOWED_ORIGINS
         value: https://aryanpandeyce.github.io,http://localhost,http://localhost:5173
       - key: APP_RATELIMIT_WRITE_PER_MINUTE
         value: 20
-
