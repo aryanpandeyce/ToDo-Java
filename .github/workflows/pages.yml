@@ -38,7 +38,7 @@ jobs:
       - name: Install dependencies and build with GitHub Pages base path
         env:
           VITE_BASE_PATH: /ToDo-Java/
-          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || '/api' }}
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://lattech-todo-backend.onrender.com/api' }}
         run: |
           npm ci
           npm run build

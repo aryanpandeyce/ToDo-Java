@@ -18,8 +18,8 @@
 | Resource | Public URL | Description |
 | :--- | :--- | :--- |
 | **Live App (GitHub Pages)** | [https://aryanpandeyce.github.io/ToDo-Java/](https://aryanpandeyce.github.io/ToDo-Java/) | React (Vite) SPA with live `X-Served-By` & Bucket4j telemetry banner |
-| **Live API Health (Render)** | `https://<RENDER_URL>/actuator/health` | Spring Boot 3 Actuator readiness, DB, and CircuitBreaker probe |
-| **Live Todo REST API** | `https://<RENDER_URL>/api/todos` | Public `GET`/`POST`/`PUT`/`DELETE` API guarded by Bucket4j & Resilience4j |
+| **Live API Health (Render)** | [https://lattech-todo-backend.onrender.com/actuator/health](https://lattech-todo-backend.onrender.com/actuator/health) | Spring Boot 3 Actuator readiness, DB, and CircuitBreaker probe |
+| **Live Todo REST API** | [https://lattech-todo-backend.onrender.com/api/todos](https://lattech-todo-backend.onrender.com/api/todos) | Public `GET`/`POST`/`PUT`/`DELETE` API guarded by Bucket4j & Resilience4j |
 | **CI/CD Pipeline Status** | [GitHub Actions Workflows](https://github.com/aryanpandeyce/ToDo-Java/actions) | Automated Maven tests, Vite build, GHCR image push, and Pages deploy |
 | **Backend Docker Image (GHCR)** | [`ghcr.io/aryanpandeyce/lattech-todo-backend:latest`](https://github.com/aryanpandeyce/ToDo-Java/pkgs/container/ToDo-Java%2Flattech-todo-backend) | Multi-stage Eclipse Temurin JRE 17 container image |
 | **Frontend / Gateway Image (GHCR)** | [`ghcr.io/aryanpandeyce/lattech-todo-frontend:latest`](https://github.com/aryanpandeyce/ToDo-Java/pkgs/container/ToDo-Java%2Flattech-todo-frontend) | Multi-stage Nginx 1.27 + Vite static SPA container image |
