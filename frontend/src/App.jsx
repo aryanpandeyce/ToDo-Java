@@ -34,22 +34,29 @@ const API_ROOT = API_BASE_URL.endsWith('/api') ? API_BASE_URL : `${API_BASE_URL}
 const TODOS_ENDPOINT = `${API_ROOT}/todos`;
 const LISTS_ENDPOINT = `${API_ROOT}/lists`;
 
-const REQUEST_TIMEOUT_MS = 12000;
+const REQUEST_TIMEOUT_MS = 45000;
 
 const LIST_COLORS = ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6'];
 
-async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    return await fetch(url, { ...options, signal: controller.signal });
-  } catch (err) {
-    if (err.name === 'AbortError') {
-      throw new Error('Request timed out after 12s. The backend may be waking up—click Retry.');
+async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS, retries = 2) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timer);
+      return res;
+    } catch (err) {
+      clearTimeout(timer);
+      if (attempt < retries) {
+        await new Promise((r) => setTimeout(r, 1500));
+        continue;
+      }
+      if (err.name === 'AbortError') {
+        throw new Error('Backend is waking up from Render free-tier sleep. Click Retry to connect.');
+      }
+      throw err;
     }
-    throw err;
-  } finally {
-    clearTimeout(timer);
   }
 }
 
