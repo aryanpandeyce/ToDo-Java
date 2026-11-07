@@ -1,4 +1,4 @@
-name: CI/CD - Test, Build & Push to GHCR
+name: Lattech Todo CI/CD - Test, Build & Push to GHCR
 
 on:
   push:
@@ -8,7 +8,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: ${{ github.repository }}
+  BACKEND_IMAGE: ghcr.io/aryanpandeyce/lattech-todo-backend
+  FRONTEND_IMAGE: ghcr.io/aryanpandeyce/lattech-todo-frontend
 
 jobs:
   backend-test:
@@ -52,7 +53,7 @@ jobs:
           npm run build
 
   docker-build-and-push:
-    name: Build & Push Docker Images to GHCR
+    name: Build & Push Lattech Docker Images to GHCR
     needs: [backend-test, frontend-build]
     runs-on: ubuntu-latest
     permissions:
@@ -73,33 +74,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push Backend Image
+      - name: Build and Push Lattech Backend Image
         uses: docker/build-push-action@v6
         with:
           context: ./backend
           file: ./backend/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-backend:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-backend:${{ github.sha }}
+            ${{ env.BACKEND_IMAGE }}:latest
+            ${{ env.BACKEND_IMAGE }}:${{ github.sha }}
 
-      - name: Build and Push Frontend Standalone Image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./frontend
-          file: ./frontend/Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-frontend:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-frontend:${{ github.sha }}
-
-      - name: Build and Push Nginx Gateway + SPA Image
+      - name: Build and Push Lattech Frontend / Nginx Gateway Image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./nginx/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-nginx-gateway:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-nginx-gateway:${{ github.sha }}
-
+            ${{ env.FRONTEND_IMAGE }}:latest
+            ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}

@@ -17,7 +17,7 @@ const BASE_URL = __ENV.BASE_URL || 'http://localhost';
 export const options = {
   scenarios: {
     // Phase 1: Steady traffic showing least_conn load balancing + failover resilience
-    // TIP: Run `docker stop todo-backend-2` during this window to witness zero-downtime failover!
+    // TIP: Run `docker stop lattech-backend-2` during this window to witness zero-downtime failover!
     steady_load_and_failover: {
       executor: 'constant-arrival-rate',
       rate: 6,
@@ -113,3 +113,4 @@ export function burstTrafficSpike() {
       r.status === 201 || (r.status === 429 && r.headers['Retry-After'] !== undefined),
   });
 }
+

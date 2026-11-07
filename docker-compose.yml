@@ -1,4 +1,5 @@
 x-backend-template: &backend-template
+  image: ghcr.io/aryanpandeyce/lattech-todo-backend:latest
   build:
     context: ./backend
     dockerfile: Dockerfile
@@ -31,7 +32,7 @@ services:
   # ------------------------------------------------------------------------
   postgres:
     image: postgres:16-alpine
-    container_name: todo-postgres
+    container_name: lattech-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-tododb}
@@ -55,7 +56,7 @@ services:
   # ------------------------------------------------------------------------
   backend-1:
     <<: *backend-template
-    container_name: todo-backend-1
+    container_name: lattech-backend-1
     hostname: backend-1
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
@@ -69,7 +70,7 @@ services:
 
   backend-2:
     <<: *backend-template
-    container_name: todo-backend-2
+    container_name: lattech-backend-2
     hostname: backend-2
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
@@ -83,7 +84,7 @@ services:
 
   backend-3:
     <<: *backend-template
-    container_name: todo-backend-3
+    container_name: lattech-backend-3
     hostname: backend-3
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
@@ -99,10 +100,11 @@ services:
   # SINGLE ENTRY POINT: Nginx Reverse Proxy + React Static Build (Port 80)
   # ------------------------------------------------------------------------
   nginx:
+    image: ghcr.io/aryanpandeyce/lattech-todo-frontend:latest
     build:
       context: .
       dockerfile: nginx/Dockerfile
-    container_name: todo-nginx-gateway
+    container_name: lattech-nginx
     restart: unless-stopped
     ports:
       - "80:80"
@@ -126,7 +128,7 @@ services:
   # ------------------------------------------------------------------------
   prometheus:
     image: prom/prometheus:v2.53.0
-    container_name: todo-prometheus
+    container_name: lattech-prometheus
     restart: unless-stopped
     volumes:
       - ./nginx/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
@@ -142,7 +144,7 @@ services:
 
   grafana:
     image: grafana/grafana:11.1.0
-    container_name: todo-grafana
+    container_name: lattech-grafana
     restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_USER: ${GF_SECURITY_ADMIN_USER:-admin}
@@ -167,4 +169,3 @@ volumes:
   postgres_data:
   prometheus_data:
   grafana_data:
-

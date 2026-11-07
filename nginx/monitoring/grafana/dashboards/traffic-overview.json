@@ -78,7 +78,8 @@
   "tags": ["traffic-management", "spring-boot", "nginx"],
   "templating": { "list": [] },
   "time": { "from": "now-15m", "to": "now" },
-  "title": "Todo Traffic Management & HA Overview",
-  "uid": "todo-traffic-mgmt",
+  "title": "Lattech Todo - Traffic Management Overview",
+  "uid": "lattech-todo-traffic-mgmt",
   "version": 1
 }
+

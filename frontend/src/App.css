@@ -1,11 +1,12 @@
 :root {
-  --bg: #0f172a;
-  --panel: #1e293b;
-  --border: #334155;
+  --bg: #0b0f19;
+  --panel: #131b2e;
+  --border: #26324d;
   --text: #f8fafc;
   --muted: #94a3b8;
-  --accent: #38bdf8;
-  --primary: #2563eb;
+  --accent: #06b6d4;
+  --accent-secondary: #6366f1;
+  --primary: #4f46e5;
   --danger: #dc2626;
   --warn: #f59e0b;
   --success: #10b981;
@@ -35,21 +36,47 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.brand-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent-secondary), var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
 }
 
 .header h1 {
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: 800;
+  background: linear-gradient(90deg, #ffffff, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .telemetry-panel {
   background: var(--panel);
   border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
   border-radius: 10px;
   padding: 1rem;
   margin-bottom: 1.5rem;
@@ -110,7 +137,7 @@ body {
 .history-pill {
   font-size: 0.75rem;
   font-family: monospace;
-  background: #0f172a;
+  background: #0b0f19;
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
   border: 1px solid var(--border);
@@ -165,15 +192,15 @@ input[type="text"]:focus {
   font-weight: 600;
   cursor: pointer;
   font-size: 0.9rem;
-  transition: opacity 0.15s;
+  transition: opacity 0.15s, transform 0.1s;
 }
 
 .btn:hover {
-  opacity: 0.9;
+  opacity: 0.92;
 }
 
 .btn-primary {
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--accent-secondary), var(--accent));
   color: white;
 }
 
@@ -227,6 +254,7 @@ input[type="text"]:focus {
   width: 1.1rem;
   height: 1.1rem;
   cursor: pointer;
+  accent-color: var(--accent);
 }
 
 .todo-title {
@@ -262,4 +290,24 @@ input[type="text"]:focus {
   background: var(--panel);
   border-radius: 8px;
   border: 1px dashed var(--border);
+}
+
+.footer {
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.footer strong {
+  color: var(--accent);
+}
+
+.footer-sep {
+  opacity: 0.5;
 }

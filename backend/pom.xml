@@ -9,11 +9,11 @@
         <version>3.2.5</version>
         <relativePath/>
     </parent>
-    <groupId>com.example</groupId>
-    <artifactId>todo-backend</artifactId>
+    <groupId>com.lattech</groupId>
+    <artifactId>lattech-todo-backend</artifactId>
     <version>1.0.0</version>
-    <name>todo-backend</name>
-    <description>Traffic Management Demo Todo Backend</description>
+    <name>lattech-todo</name>
+    <description>Lattech Todo - Enterprise Traffic Management &amp; HA Platform</description>
 
     <properties>
         <java.version>17</java.version>

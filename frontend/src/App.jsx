@@ -20,7 +20,7 @@ export default function App() {
   });
 
   const recordTelemetry = (response, elapsedMs, data) => {
-    const servedBy = response.headers.get('X-Served-By') || data?.servedBy || 'nginx-gateway';
+    const servedBy = response.headers.get('X-Served-By') || data?.servedBy || 'lattech-nginx-gateway';
     const remaining = response.headers.get('X-Rate-Limit-Remaining');
     const retryAfter = response.headers.get('Retry-After');
 
@@ -177,11 +177,14 @@ export default function App() {
   return (
     <div className="container">
       <header className="header">
-        <div>
-          <h1>Traffic Management Todo</h1>
-          <p className="subtitle">
-            Nginx Reverse Proxy (least_conn) + 3x Spring Boot Replicas + Bucket4j & Resilience4j
-          </p>
+        <div className="brand-header">
+          <div className="brand-logo">LT</div>
+          <div>
+            <h1>Lattech Todo</h1>
+            <p className="subtitle">
+              Enterprise Traffic Management • Nginx (least_conn) • 3x Spring Boot Replicas • Bucket4j & Resilience4j
+            </p>
+          </div>
         </div>
         <button className="btn btn-secondary" onClick={fetchTodos} disabled={loading}>
           {loading ? 'Refreshing...' : 'Ping Upstream (GET)'}
@@ -249,7 +252,7 @@ export default function App() {
 
       <div className="todo-list">
         {todos.length === 0 ? (
-          <p className="empty-state">No todos yet. Create one above to test upstream load balancing!</p>
+          <p className="empty-state">No todos yet. Create one above to test Lattech upstream load balancing!</p>
         ) : (
           todos.map((todo) => (
             <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
@@ -303,6 +306,12 @@ export default function App() {
           ))
         )}
       </div>
+
+      <footer className="footer">
+        <span>Built by <strong>Lattech</strong></span>
+        <span className="footer-sep">•</span>
+        <span>High-Availability Traffic Management Architecture</span>
+      </footer>
     </div>
   );
 }
