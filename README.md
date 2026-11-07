@@ -1,6 +1,7 @@
 # Lattech Todo
 
 [![Lattech Todo CI/CD](https://github.com/aryanpandeyce/ToDo-Java/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/aryanpandeyce/ToDo-Java/actions/workflows/ci-cd.yml)
+[![Deploy Frontend to GitHub Pages](https://github.com/aryanpandeyce/ToDo-Java/actions/workflows/pages.yml/badge.svg)](https://github.com/aryanpandeyce/ToDo-Java/actions/workflows/pages.yml)
 ![Java 17](https://img.shields.io/badge/Java-17-06b6d4?logo=openjdk&logoColor=white)
 ![Spring Boot 3.2](https://img.shields.io/badge/Spring_Boot-3.2.5-6db33f?logo=springboot&logoColor=white)
 ![React 18](https://img.shields.io/badge/React-18.3-61dafb?logo=react&logoColor=black)
@@ -9,6 +10,23 @@
 ![GHCR](https://img.shields.io/badge/GHCR-aryanpandeyce%2Flattech--todo-6366f1?logo=github&logoColor=white)
 
 **Lattech Todo** is a full-stack reference platform built by **Lattech** to demonstrate **production traffic engineering, defense-in-depth rate limiting, high-availability failover, circuit breaking, and real-time observability** in system design and backend engineering interviews. The Todo domain logic is kept intentionally concise so that the **Nginx edge gateway, 3-node Spring Boot cluster, Bucket4j & Resilience4j protections, and Prometheus/Grafana telemetry** take center stage.
+
+---
+
+## Live Demo & Container Registry Links
+
+| Resource | Public URL | Description |
+| :--- | :--- | :--- |
+| **Live App (GitHub Pages)** | [https://aryanpandeyce.github.io/ToDo-Java/](https://aryanpandeyce.github.io/ToDo-Java/) | React (Vite) SPA with live `X-Served-By` & Bucket4j telemetry banner |
+| **Live API Health (Render)** | `https://<RENDER_URL>/actuator/health` | Spring Boot 3 Actuator readiness, DB, and CircuitBreaker probe |
+| **Live Todo REST API** | `https://<RENDER_URL>/api/todos` | Public `GET`/`POST`/`PUT`/`DELETE` API guarded by Bucket4j & Resilience4j |
+| **CI/CD Pipeline Status** | [GitHub Actions Workflows](https://github.com/aryanpandeyce/ToDo-Java/actions) | Automated Maven tests, Vite build, GHCR image push, and Pages deploy |
+| **Backend Docker Image (GHCR)** | [`ghcr.io/aryanpandeyce/lattech-todo-backend:latest`](https://github.com/aryanpandeyce/ToDo-Java/pkgs/container/ToDo-Java%2Flattech-todo-backend) | Multi-stage Eclipse Temurin JRE 17 container image |
+| **Frontend / Gateway Image (GHCR)** | [`ghcr.io/aryanpandeyce/lattech-todo-frontend:latest`](https://github.com/aryanpandeyce/ToDo-Java/pkgs/container/ToDo-Java%2Flattech-todo-frontend) | Multi-stage Nginx 1.27 + Vite static SPA container image |
+
+> **Note 1 (Render Free Tier Cold Start)**: *Free tier backend may sleep after inactivity; first request can take ~30-60s to wake up the JVM container.*
+>
+> **Note 2 (Full Traffic Management Cluster)**: *Full traffic management demo (Nginx LB, 3 replicas, Grafana) runs via docker compose locally or on a VPS.*
 
 ---
 
@@ -221,6 +239,60 @@ docker stop lattech-backend-2
 
 4. **Downstream Protection & Observability (1:30 – 2:00)**
    *"To prevent cascading database failures, every JPA call in `TodoService` is guarded by a Resilience4j `CircuitBreaker` and a 3-second `TimeLimiter`. If PostgreSQL slows down or fails, the circuit opens and fails fast with `503 Service Unavailable` rather than exhausting HikariCP and Tomcat thread pools. Finally, Prometheus scrapes `/actuator/prometheus` across all 3 replicas every 5 seconds and feeds our pre-provisioned **Lattech Todo - Traffic Management Overview** dashboard in Grafana."*
+
+---
+
+## 8. Deployment Guide
+
+### Option A: Cloud Public Hosting (GitHub Pages Frontend + Render Backend & PostgreSQL)
+
+This repository includes a zero-config Render Blueprint ([`render.yaml`](file:///c:/Users/aryan/OneDrive/Desktop/ToDo-Java/render.yaml)) and an automated GitHub Pages workflow ([`.github/workflows/pages.yml`](file:///c:/Users/aryan/OneDrive/Desktop/ToDo-Java/.github/workflows/pages.yml)).
+
+1. **Deploy the Backend + PostgreSQL on Render (`render.yaml`)**:
+   - Sign in to [Render](https://dashboard.render.com/) and click **New +** -> **Blueprint**.
+   - Connect your GitHub repository: `aryanpandeyce/ToDo-Java` (branch `main`).
+   - Render automatically detects [`render.yaml`](file:///c:/Users/aryan/OneDrive/Desktop/ToDo-Java/render.yaml) and provisions:
+     - `lattech-postgres`: Managed PostgreSQL 16 database (`tododb`).
+     - `lattech-todo-backend`: Docker web service built from `backend/Dockerfile` with `/actuator/health` probe, `server.forward-headers-strategy=framework` for accurate per-IP Bucket4j rate limiting behind Render's load balancer, and CORS enabled for `https://aryanpandeyce.github.io`.
+   - Copy your deployed Render service URL (e.g., `https://lattech-todo-backend.onrender.com`).
+
+2. **Enable GitHub Pages & Configure `VITE_API_BASE_URL`**:
+   - In your GitHub repo (`https://github.com/aryanpandeyce/ToDo-Java`), go to **Settings** -> **Pages**.
+   - Under **Build and deployment** -> **Source**, select **GitHub Actions**.
+   - Go to **Settings** -> **Secrets and variables** -> **Actions** -> **Variables** tab -> **New repository variable**:
+     - **Name**: `VITE_API_BASE_URL`
+     - **Value**: `https://<RENDER_URL>/api` *(e.g. `https://lattech-todo-backend.onrender.com/api`)*
+   - Go to the **Actions** tab -> **Deploy Frontend to GitHub Pages** -> click **Run workflow** (or push any commit to `main`).
+   - Your live app will be published at: **https://aryanpandeyce.github.io/ToDo-Java/**
+
+---
+
+### Option B: Full Traffic Management Stack on a VPS (Ubuntu / Debian + Docker Compose)
+
+To run the complete 7-container architecture (Nginx `least_conn` load balancer, 3 Spring Boot replicas, PostgreSQL, Prometheus, and Grafana) on an Ubuntu/Debian VPS (DigitalOcean, AWS EC2, Hetzner, Linode):
+
+```bash
+# 1. SSH into your VPS and install Docker + Docker Compose plugin
+curl -fsSL https://get.docker.com | sh
+
+# 2. Clone the repository
+git clone https://github.com/aryanpandeyce/ToDo-Java.git
+cd ToDo-Java
+
+# 3. Create your production .env from the template and set strong passwords
+cp .env.example .env
+nano .env
+
+# 4. Build and launch all 7 containers in detached mode
+docker compose up --build -d
+
+# 5. Verify all containers are healthy
+docker compose ps
+```
+
+- **App & Nginx Gateway**: `http://<VPS_IP>` (Port `80`)
+- **Grafana Dashboard**: `http://<VPS_IP>:3000`
+- **Prometheus**: `http://<VPS_IP>:9090`
 
 ---
 
