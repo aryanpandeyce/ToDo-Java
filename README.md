@@ -1,6 +1,6 @@
 # Lattech Todo
 
-[![Lattech Todo CI/CD](https://github.com/aryanpandeyce/lattech-todo/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/aryanpandeyce/lattech-todo/actions/workflows/ci-cd.yml)
+[![Lattech Todo CI/CD](https://github.com/aryanpandeyce/ToDo-Java/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/aryanpandeyce/ToDo-Java/actions/workflows/ci-cd.yml)
 ![Java 17](https://img.shields.io/badge/Java-17-06b6d4?logo=openjdk&logoColor=white)
 ![Spring Boot 3.2](https://img.shields.io/badge/Spring_Boot-3.2.5-6db33f?logo=springboot&logoColor=white)
 ![React 18](https://img.shields.io/badge/React-18.3-61dafb?logo=react&logoColor=black)
