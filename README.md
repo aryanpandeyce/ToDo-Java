@@ -205,16 +205,23 @@ docker stop lattech-backend-2
 
 ---
 
-## 6. Screenshots & Visual Walkthrough
+## 6. Workspace Features & Screenshots
 
-> When presenting in an interview or adding screenshots to your portfolio, capture these 4 views:
+### Key Application & SaaS Workspace Features
+- **Todoist / Notion-Inspired SaaS Layout**: Left navigation sidebar (`Inbox`, `Today`, `Upcoming`, `Completed`), custom color-coded **Lists / Folders** (`/api/lists`) with live task counters, and responsive mobile drawer.
+- **Rich Task Management**: Priority levels (`LOW`, `MEDIUM`, `HIGH`), due date chips with automatic red **Overdue** and **Due Today** indicators, list labels, hover edit/delete actions, quick-add bar, and a full create/edit modal (zero raw database IDs shown in UI).
+- **Server & Client Filtering, Search, and Sorting**: Filter by `listId`, `status`, `priority`, and search query `q` (`GET /api/todos?listId=&status=&priority=&q=&sort=dueDate|priority|createdAt`).
+- **Light / Dark Theme & Resilient UX**: Default light theme with instant dark-mode toggle, `12s` `AbortController` request timeout, retryable error banner, skeleton loaders, and non-blocking toast notifications.
+- **Dedicated `/monitor` Traffic Engineering Page**: Moved out of the main workspace so the productivity UI stays clean; features a live bar chart of requests served per replica (`backend-1/2/3`), Bucket4j write quota gauge, **Send 20 test requests** load-balancing simulator, and **Spam writes (Trigger 429)** button, while the main workspace shows only a subtle `Served by: <instance>` footer pill.
 
-1. **Lattech Todo UI & Live Telemetry Panel (`http://localhost`)**
-   - Shows the **Lattech Todo** header, `LT` gradient badge, live `X-Served-By` replica indicator (`backend-1`, `backend-2`, `backend-3`), remaining Bucket4j write quota (`19 / min`), rolling upstream routing history pills, and the *"Built by Lattech"* footer.
-   - *Placeholder*: `docs/screenshots/lattech-todo-ui.png`
-2. **HTTP 429 Rate Limit Alert Banner in UI**
-   - Rapidly clicking **Add Todo (POST)** more than 20 times in a minute displays the red traffic alert banner with the exact `Retry-After` countdown returned by `RateLimitFilter`.
-   - *Placeholder*: `docs/screenshots/lattech-rate-limit-429.png`
+### Visual Walkthrough & Screenshots
+
+1. **Lattech Todo Main SaaS Workspace (Light & Dark Themes)**
+   - Shows the left sidebar with custom color-dot Lists, top search/sort bar, filter chips, quick-add bar, priority/due-date task cards, and subtle `Served by: backend-1` footer badge.
+   - *Placeholder*: `docs/screenshots/lattech-workspace-light.png` & `docs/screenshots/lattech-workspace-dark.png`
+2. **Dedicated Traffic Monitor Page (`/#/monitor`)**
+   - Shows the live per-replica request distribution bar chart (`backend-1`, `backend-2`, `backend-3`), `X-Served-By` badge, Bucket4j write quota counter, **Send 20 test requests** button, and **Spam writes (Trigger 429)** toast notification.
+   - *Placeholder*: `docs/screenshots/lattech-traffic-monitor-page.png`
 3. **Grafana Dashboard — "Lattech Todo - Traffic Management Overview" (`http://localhost:3000`)**
    - Displays 5 real-time panels: *Requests / Sec by Backend Replica*, *P95 Request Latency (ms)*, *Error & Rate-Limit Rate (HTTP 429/5xx)*, *Resilience4j Circuit Breaker State*, and *JVM Active Threads*.
    - *Placeholder*: `docs/screenshots/lattech-grafana-dashboard.png`
