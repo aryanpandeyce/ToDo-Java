@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-const rawApiBase = import.meta.env.VITE_API_BASE_URL || '/api';
+const defaultApiBase =
+  typeof window !== 'undefined' && window.location.hostname.endsWith('github.io')
+    ? 'https://lattech-todo-backend.onrender.com/api'
+    : '/api';
+const rawApiBase = (import.meta.env.VITE_API_BASE_URL || '').trim() || defaultApiBase;
 const API_BASE_URL = rawApiBase.replace(/\/+$/, '');
 const TODOS_ENDPOINT = API_BASE_URL.endsWith('/api')
   ? `${API_BASE_URL}/todos`
