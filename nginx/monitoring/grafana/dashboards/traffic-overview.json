@@ -1,0 +1,84 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Requests / Sec by Backend Replica (Load Balancing)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sum by (instance) (rate(http_server_requests_seconds_count{uri=~\"/api/todos.*\"}[1m]))",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "P95 Request Latency (ms) per Replica",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "1000 * histogram_quantile(0.95, sum by (le, instance) (rate(http_server_requests_seconds_bucket{uri=~\"/api/todos.*\"}[1m])))",
+          "legendFormat": "p95 {{instance}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Error & Rate-Limit Rate (HTTP 4xx / 429 / 5xx)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sum by (status, instance) (rate(http_server_requests_seconds_count{status!~\"2..\"}[1m]))",
+          "legendFormat": "HTTP {{status}} ({{instance}})",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Resilience4j Circuit Breaker State (0=Closed, 1=Open, 2=Half-Open)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "resilience4j_circuitbreaker_state{name=\"todoDb\", state=\"closed\"}",
+          "legendFormat": "{{instance}} Closed",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "JVM Active Threads per Replica",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "jvm_threads_live_threads",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["traffic-management", "spring-boot", "nginx"],
+  "templating": { "list": [] },
+  "time": { "from": "now-15m", "to": "now" },
+  "title": "Todo Traffic Management & HA Overview",
+  "uid": "todo-traffic-mgmt",
+  "version": 1
+}

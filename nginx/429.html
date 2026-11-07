@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>429 Too Many Requests - Traffic Gateway</title>
+  <style>
+    body {
+      background: #0f172a;
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #f59e0b;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 480px;
+      text-align: center;
+    }
+    h1 { color: #f59e0b; margin-top: 0; }
+    code { background: #0f172a; padding: 0.2rem 0.4rem; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>429 Too Many Requests</h1>
+    <p>Nginx Edge Rate Limiting (<code>limit_req_zone</code>) has throttled your IP address to protect upstream services.</p>
+    <p>Please wait a few seconds before retrying.</p>
+  </div>
+</body>
+</html>
