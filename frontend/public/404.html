@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lattech Todo | Redirecting...</title>
+    <script>
+      // GitHub Pages SPA 404 fallback redirect to index.html
+      const repoBase = '/ToDo-Java/';
+      if (window.location.pathname.startsWith(repoBase) && window.location.pathname !== repoBase) {
+        window.location.replace(repoBase);
+      }
+    </script>
+    <meta http-equiv="refresh" content="0; url=/ToDo-Java/" />
+  </head>
+  <body></body>
+</html>
+

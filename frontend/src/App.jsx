@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
+const rawApiBase = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL = rawApiBase.replace(/\/+$/, '');
+const TODOS_ENDPOINT = API_BASE_URL.endsWith('/api')
+  ? `${API_BASE_URL}/todos`
+  : `${API_BASE_URL}/api/todos`;
+
 export default function App() {
   const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState('');
@@ -47,7 +53,7 @@ export default function App() {
     setError(null);
     const start = performance.now();
     try {
-      const res = await fetch('/api/todos');
+      const res = await fetch(TODOS_ENDPOINT);
       const elapsed = Math.round(performance.now() - start);
       const data = await res.json().catch(() => null);
       recordTelemetry(res, elapsed, data);
@@ -73,7 +79,7 @@ export default function App() {
     setError(null);
     const start = performance.now();
     try {
-      const res = await fetch('/api/todos', {
+      const res = await fetch(TODOS_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, description, completed: false })
@@ -97,7 +103,7 @@ export default function App() {
     setError(null);
     const start = performance.now();
     try {
-      const res = await fetch(`/api/todos/${todo.id}`, {
+      const res = await fetch(`${TODOS_ENDPOINT}/${todo.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -130,7 +136,7 @@ export default function App() {
     setError(null);
     const start = performance.now();
     try {
-      const res = await fetch(`/api/todos/${todo.id}`, {
+      const res = await fetch(`${TODOS_ENDPOINT}/${todo.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -157,7 +163,7 @@ export default function App() {
     setError(null);
     const start = performance.now();
     try {
-      const res = await fetch(`/api/todos/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${TODOS_ENDPOINT}/${ id}`, { method: 'DELETE' });
       const elapsed = Math.round(performance.now() - start);
       let data = null;
       if (res.status !== 204) {
