@@ -2,6 +2,7 @@ package com.example.todo.controller;
 
 import com.example.todo.dto.TodoRequest;
 import com.example.todo.dto.TodoResponse;
+import com.example.todo.entity.Priority;
 import com.example.todo.service.TodoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,8 +22,13 @@ public class TodoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TodoResponse>> getAllTodos() {
-        return ResponseEntity.ok(todoService.getAllTodos());
+    public ResponseEntity<List<TodoResponse>> getAllTodos(
+            @RequestParam(required = false) Long listId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Priority priority,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false, defaultValue = "createdAt") String sort) {
+        return ResponseEntity.ok(todoService.getTodos(listId, status, priority, q, sort));
     }
 
     @PostMapping
@@ -44,4 +50,3 @@ public class TodoController {
         return ResponseEntity.noContent().build();
     }
 }
-

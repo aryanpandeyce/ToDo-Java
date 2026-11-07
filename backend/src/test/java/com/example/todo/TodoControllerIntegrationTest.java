@@ -1,7 +1,10 @@
 package com.example.todo;
 
+import com.example.todo.dto.TodoListRequest;
 import com.example.todo.dto.TodoRequest;
+import com.example.todo.entity.Priority;
 import com.example.todo.filter.RateLimitFilter;
+import com.example.todo.repository.TodoListRepository;
 import com.example.todo.repository.TodoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.time.LocalDate;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -34,19 +39,43 @@ class TodoControllerIntegrationTest {
     private TodoRepository todoRepository;
 
     @Autowired
+    private TodoListRepository todoListRepository;
+
+    @Autowired
     private RateLimitFilter rateLimitFilter;
 
     @BeforeEach
     void setUp() {
         todoRepository.deleteAll();
+        todoListRepository.deleteAll();
         rateLimitFilter.clearBuckets();
     }
 
     @Test
-    @DisplayName("Test 1: Full CRUD lifecycle (Create, Read, Update, Delete) and X-Served-By header")
+    @DisplayName("Test 1: Full CRUD lifecycle with Lists, Priority, DueDate, Query Filters and X-Served-By header")
     void shouldPerformFullCrudLifecycleAndIncludeServedByHeader() throws Exception {
-        // 1. Create Todo
-        TodoRequest createReq = new TodoRequest("Configure Nginx Upstream", "Set least_conn across 3 replicas", false);
+        // 0. Create a TodoList folder
+        TodoListRequest listReq = new TodoListRequest("Infrastructure", "#06b6d4");
+        MvcResult listResult = mockMvc.perform(post("/api/lists")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(listReq)))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("X-Served-By", "backend-test-replica-1"))
+                .andExpect(jsonPath("$.name", is("Infrastructure")))
+                .andExpect(jsonPath("$.color", is("#06b6d4")))
+                .andReturn();
+
+        Long listId = objectMapper.readTree(listResult.getResponse().getContentAsString()).get("id").asLong();
+
+        // 1. Create Todo with priority, dueDate, and listId
+        TodoRequest createReq = new TodoRequest(
+                "Configure Nginx Upstream",
+                "Set least_conn across 3 replicas",
+                false,
+                Priority.HIGH,
+                LocalDate.now().plusDays(2),
+                listId
+        );
 
         MvcResult createResult = mockMvc.perform(post("/api/todos")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -56,32 +85,48 @@ class TodoControllerIntegrationTest {
                 .andExpect(header().exists("X-Rate-Limit-Remaining"))
                 .andExpect(jsonPath("$.id", notNullValue()))
                 .andExpect(jsonPath("$.title", is("Configure Nginx Upstream")))
+                .andExpect(jsonPath("$.priority", is("HIGH")))
+                .andExpect(jsonPath("$.listId", is(listId.intValue())))
+                .andExpect(jsonPath("$.listName", is("Infrastructure")))
                 .andExpect(jsonPath("$.completed", is(false)))
                 .andReturn();
 
         Long createdId = objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asLong();
 
-        // 2. Get All Todos
-        mockMvc.perform(get("/api/todos"))
+        // 2. Get Todos with query filter (?listId=&priority=HIGH&q=Nginx&sort=priority)
+        mockMvc.perform(get("/api/todos")
+                        .param("listId", String.valueOf(listId))
+                        .param("priority", "HIGH")
+                        .param("q", "Nginx")
+                        .param("sort", "priority"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-Served-By", "backend-test-replica-1"))
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(createdId.intValue())));
 
         // 3. Update Todo
-        TodoRequest updateReq = new TodoRequest("Configure Nginx Upstream & Failover", "Added proxy_next_upstream", true);
+        TodoRequest updateReq = new TodoRequest(
+                "Configure Nginx Upstream & Failover",
+                "Added proxy_next_upstream",
+                true,
+                Priority.LOW,
+                LocalDate.now().plusDays(5),
+                listId
+        );
         mockMvc.perform(put("/api/todos/{id}", createdId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateReq)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title", is("Configure Nginx Upstream & Failover")))
+                .andExpect(jsonPath("$.priority", is("LOW")))
                 .andExpect(jsonPath("$.completed", is(true)));
 
         // 4. Delete Todo
         mockMvc.perform(delete("/api/todos/{id}", createdId))
                 .andExpect(status().isNoContent());
 
-        // 5. Verify Deletion returns 404
+        // Note: 4 writes used so far (POST /api/lists, POST /api/todos, PUT /api/todos, DELETE /api/todos).
+        // 5th write: Verify Deletion returns 404
         mockMvc.perform(delete("/api/todos/{id}", createdId))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status", is(404)));
@@ -135,4 +180,3 @@ class TodoControllerIntegrationTest {
                 .andExpect(status().isOk());
     }
 }
-

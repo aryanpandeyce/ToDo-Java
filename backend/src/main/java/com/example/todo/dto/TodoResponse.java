@@ -1,7 +1,11 @@
 package com.example.todo.dto;
 
+import com.example.todo.entity.Priority;
 import com.example.todo.entity.Todo;
+import com.example.todo.entity.TodoList;
+
 import java.time.Instant;
+import java.time.LocalDate;
 
 public class TodoResponse {
 
@@ -9,30 +13,34 @@ public class TodoResponse {
     private String title;
     private String description;
     private boolean completed;
+    private Priority priority;
+    private LocalDate dueDate;
+    private Long listId;
+    private String listName;
+    private String listColor;
     private Instant createdAt;
     private Instant updatedAt;
 
     public TodoResponse() {
     }
 
-    public TodoResponse(Long id, String title, String description, boolean completed, Instant createdAt, Instant updatedAt) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.completed = completed;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
     public static TodoResponse fromEntity(Todo todo) {
-        return new TodoResponse(
-                todo.getId(),
-                todo.getTitle(),
-                todo.getDescription(),
-                todo.isCompleted(),
-                todo.getCreatedAt(),
-                todo.getUpdatedAt()
-        );
+        TodoResponse res = new TodoResponse();
+        res.setId(todo.getId());
+        res.setTitle(todo.getTitle());
+        res.setDescription(todo.getDescription());
+        res.setCompleted(todo.isCompleted());
+        res.setPriority(todo.getPriority() != null ? todo.getPriority() : Priority.MEDIUM);
+        res.setDueDate(todo.getDueDate());
+        TodoList list = todo.getTodoList();
+        if (list != null) {
+            res.setListId(list.getId());
+            res.setListName(list.getName());
+            res.setListColor(list.getColor());
+        }
+        res.setCreatedAt(todo.getCreatedAt());
+        res.setUpdatedAt(todo.getUpdatedAt());
+        return res;
     }
 
     public Long getId() {
@@ -67,6 +75,46 @@ public class TodoResponse {
         this.completed = completed;
     }
 
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public Long getListId() {
+        return listId;
+    }
+
+    public void setListId(Long listId) {
+        this.listId = listId;
+    }
+
+    public String getListName() {
+        return listName;
+    }
+
+    public void setListName(String listName) {
+        this.listName = listName;
+    }
+
+    public String getListColor() {
+        return listColor;
+    }
+
+    public void setListColor(String listColor) {
+        this.listColor = listColor;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
@@ -83,4 +131,3 @@ public class TodoResponse {
         this.updatedAt = updatedAt;
     }
 }
-

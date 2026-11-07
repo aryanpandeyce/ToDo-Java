@@ -48,7 +48,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        if (path.startsWith("/api/todos") && isWriteMethod(method)) {
+        if ((path.startsWith("/api/todos") || path.startsWith("/api/lists")) && isWriteMethod(method)) {
             String clientIp = extractClientIp(request);
             Bucket bucket = buckets.computeIfAbsent(clientIp, this::createNewBucket);
 

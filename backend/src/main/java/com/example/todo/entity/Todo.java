@@ -2,6 +2,7 @@ package com.example.todo.entity;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "todos")
@@ -20,6 +21,17 @@ public class Todo {
     @Column(nullable = false)
     private boolean completed = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Priority priority = Priority.MEDIUM;
+
+    @Column(name = "due_date")
+    private LocalDate dueDate;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "list_id")
+    private TodoList todoList;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -33,6 +45,7 @@ public class Todo {
         this.title = title;
         this.description = description;
         this.completed = completed;
+        this.priority = Priority.MEDIUM;
     }
 
     @PrePersist
@@ -40,11 +53,17 @@ public class Todo {
         Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;
+        if (this.priority == null) {
+            this.priority = Priority.MEDIUM;
+        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = Instant.now();
+        if (this.priority == null) {
+            this.priority = Priority.MEDIUM;
+        }
     }
 
     public Long getId() {
@@ -79,6 +98,30 @@ public class Todo {
         this.completed = completed;
     }
 
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public TodoList getTodoList() {
+        return todoList;
+    }
+
+    public void setTodoList(TodoList todoList) {
+        this.todoList = todoList;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
@@ -95,4 +138,3 @@ public class Todo {
         this.updatedAt = updatedAt;
     }
 }
-

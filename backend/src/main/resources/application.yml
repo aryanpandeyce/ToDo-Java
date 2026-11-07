@@ -68,7 +68,7 @@ resilience4j:
   timelimiter:
     instances:
       todoDb:
-        timeoutDuration: 3s
+        timeoutDuration: 8s
         cancelRunningFuture: true
 
 app:
